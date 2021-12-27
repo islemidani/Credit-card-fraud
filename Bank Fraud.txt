@@ -1,0 +1,71 @@
+# Import libraries :
+
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+import seaborn as sns
+
+from sklearn import metrics
+from sklearn import preprocessing
+from sklearn import model_selection
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve, roc_auc_score,auc, accuracy_score
+
+from sklearn.linear_model import LogisticRegression
+
+from sklearn.model_selection import train_test_split
+
+# Read the data base :
+
+df = pd.read_csv("../input/card.csv")
+df.head()
+df.count()
+df.info()
+df.describe()
+df.columns
+columns = df.columns
+columns = columns.drop(['Time'])
+
+# Machine Learning :
+
+# Random Forest :
+
+from sklearn.model_selection import train_test_split
+
+X = df.drop(['Class'], axis=1)
+y = df.Class
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
+
+from sklearn import ensemble
+
+rf = ensemble.RandomForestClassifier()
+rf.fit(X_train, y_train)
+y_rf = rf.predict(X_test)
+print(classification_report(y_test, y_rf))
+
+cm = confusion_matrix(y_test, y_rf)
+print(cm)
+
+# Visualisation :
+
+for col in columns :
+    plt.figure(figsize=[10,5])
+    sns.kdeplot(df[col])
+
+# Downsampling
+
+df.Class.value_counts()
+from imblearn.under_sampling import RandomUnderSampler 
+
+rus = RandomUnderSampler()
+X_train, y_train = rus.fit_resample(X_train, y_train)
+
+y_train.value_counts()
+
+rf = ensemble.RandomForestClassifier()
+rf.fit(X_train, y_train)
+y_rf = rf.predict(X_test)
+
+print(classification_report(y_test, y_rf))
+
+cm = confusion_matrix(y_test, y_rf)
+print(cm)
